@@ -14,6 +14,7 @@ interface CalendarGridProps {
   onDrop: (routine: Routine, timeSlot: { hour: number; minute: number; day: number; roomId: string }) => void;
   onRoutineClick: (routine: ScheduledRoutine) => void;
   onMoveRoutine: (routine: ScheduledRoutine, newTimeSlot: { hour: number; minute: number; day: number; roomId: string }) => void;
+  onDeleteRoutine: (routine: ScheduledRoutine) => void;
   visibleRooms: number;
 }
 
@@ -23,6 +24,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   onDrop,
   onRoutineClick,
   onMoveRoutine,
+  onDeleteRoutine,
   visibleRooms
 }) => {
   const [currentWeek, setCurrentWeek] = useState(new Date());
@@ -266,13 +268,14 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                             onMoveRoutine={onMoveRoutine}
                             hasConflict={hasConflict}
                           >
-                            {routine && (
-                              <ScheduledBlock
-                                routine={routine}
-                                onClick={() => onRoutineClick(routine)}
-                                onMove={onMoveRoutine}
-                              />
-                            )}
+                                {routine && (
+                                  <ScheduledBlock
+                                    routine={routine}
+                                    onClick={() => onRoutineClick(routine)}
+                                    onMove={onMoveRoutine}
+                                    onDelete={onDeleteRoutine}
+                                  />
+                                )}
                           </TimeSlot>
                         );
                       })}

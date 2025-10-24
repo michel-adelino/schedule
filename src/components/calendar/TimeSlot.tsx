@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
+import { formatTime } from '../../utils/timeUtils';
 
 interface TimeSlotProps {
   hour: number;

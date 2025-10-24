@@ -2,14 +2,16 @@ import React from 'react';
 import { ScheduledRoutine } from '../../types/schedule';
 import { formatTime } from '../../utils/timeUtils';
 import { useDrag } from 'react-dnd';
+import { X } from 'lucide-react';
 
 interface ScheduledBlockProps {
   routine: ScheduledRoutine;
   onClick: () => void;
   onMove?: (routine: ScheduledRoutine, newTimeSlot: { hour: number; minute: number; day: number; roomId: string }) => void;
+  onDelete?: (routine: ScheduledRoutine) => void;
 }
 
-export const ScheduledBlock: React.FC<ScheduledBlockProps> = ({ routine, onClick, onMove }) => {
+export const ScheduledBlock: React.FC<ScheduledBlockProps> = ({ routine, onClick, onMove, onDelete }) => {
   const duration = routine.duration;
   const height = Math.max(64, (duration / 60) * 64); // Scale by 1-hour intervals
 
@@ -36,12 +38,19 @@ export const ScheduledBlock: React.FC<ScheduledBlockProps> = ({ routine, onClick
     }),
   });
 
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onDelete) {
+      onDelete(routine);
+    }
+  };
+
   return (
     <div
       ref={drag}
       className={`
         absolute left-0 right-0 z-10 cursor-move rounded-lg border-2 p-2
-        hover:shadow-lg transition-all duration-200
+        hover:shadow-lg transition-all duration-200 group
         ${isDragging ? 'opacity-50 scale-95' : 'opacity-100'}
         ${hasConflicts ? 'border-red-500 bg-red-100 shadow-lg' : 
           routine.routine.dancers.length > 0 ? 'border-blue-300' : 'border-gray-300'}
@@ -84,6 +93,17 @@ export const ScheduledBlock: React.FC<ScheduledBlockProps> = ({ routine, onClick
           </div>
         </div>
       </div>
+
+      {/* Delete button - appears on hover */}
+      {onDelete && (
+        <button
+          onClick={handleDelete}
+          className="absolute top-1 right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20"
+          title="Delete routine"
+        >
+          <X className="w-3 h-3" />
+        </button>
+      )}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { useDrag, useDrop } from 'react-dnd';
-import { Routine } from '../types/routine';
+import { Routine, ScheduledRoutine } from '../types/routine';
 
 export const useRoutineDrag = (routine: Routine) => {
   const [{ isDragging }, drag] = useDrag({

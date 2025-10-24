@@ -125,24 +125,26 @@ function App() {
     console.log('Conflict check result:', hasConflicts);
     console.log('Current scheduled routines:', scheduledRoutines.length);
     
-    if (!hasConflicts) {
-      console.log('No conflicts, adding routine to schedule');
-      setScheduledRoutines(prev => {
-        const updated = [...prev, newScheduledRoutine];
-        console.log('Updated scheduled routines:', updated.length);
-        return updated;
-      });
-      
-      // Update routine's scheduled hours
-      setRoutines(prev => prev.map(r => 
-        r.id === routine.id 
-          ? { ...r, scheduledHours: r.scheduledHours + (routine.duration / 60) }
-          : r
-      ));
-      
-      console.log('Routine scheduled successfully');
-    } else {
-      console.log('Conflict detected, routine not scheduled');
+    // Always add the routine to schedule, even with conflicts
+    console.log('Adding routine to schedule (conflicts will be shown in sidebar)');
+    setScheduledRoutines(prev => {
+      const updated = [...prev, newScheduledRoutine];
+      console.log('Updated scheduled routines:', updated.length);
+      return updated;
+    });
+    
+    // Update routine's scheduled hours
+    setRoutines(prev => prev.map(r => 
+      r.id === routine.id 
+        ? { ...r, scheduledHours: r.scheduledHours + (routine.duration / 60) }
+        : r
+    ));
+    
+    console.log('Routine scheduled successfully');
+    
+    // Show conflict warning if there are conflicts
+    if (hasConflicts) {
+      console.log('Conflicts detected - routine scheduled but conflicts will be shown');
     }
   }, [scheduledRoutines, checkConflicts]);
 
@@ -157,12 +159,31 @@ function App() {
     // Check for conflicts
     const hasConflicts = checkConflicts(scheduledRoutines.filter(sr => sr.id !== routine.id), updatedRoutine);
     
-    if (!hasConflicts) {
-      setScheduledRoutines(prev => prev.map(sr => 
-        sr.id === routine.id ? updatedRoutine : sr
-      ));
+    // Always move the routine, even with conflicts
+    setScheduledRoutines(prev => prev.map(sr => 
+      sr.id === routine.id ? updatedRoutine : sr
+    ));
+    
+    if (hasConflicts) {
+      console.log('Routine moved with conflicts - conflicts will be shown in sidebar');
     }
   }, [scheduledRoutines, checkConflicts]);
+
+  const handleDeleteScheduledRoutine = useCallback((routine: ScheduledRoutine) => {
+    console.log('Deleting scheduled routine:', routine.routine.songTitle);
+    
+    // Remove from scheduled routines
+    setScheduledRoutines(prev => prev.filter(sr => sr.id !== routine.id));
+    
+    // Update routine's scheduled hours
+    setRoutines(prev => prev.map(r => 
+      r.id === routine.routineId 
+        ? { ...r, scheduledHours: Math.max(0, r.scheduledHours - (routine.duration / 60)) }
+        : r
+    ));
+    
+    console.log('Scheduled routine deleted successfully');
+  }, []);
 
   const handleResolveConflicts = useCallback(() => {
     // In a real app, you'd handle the conflict resolution logic here
@@ -190,7 +211,7 @@ function App() {
     const diff = start.getDate() - day;
     start.setDate(diff);
     
-    const weekDates: Date[] = [];
+    const weekDates = [];
     for (let i = 0; i < 7; i++) {
       const day = new Date(start);
       day.setDate(start.getDate() + i);
@@ -217,14 +238,15 @@ function App() {
 
         {/* Main Calendar Area */}
         <div className="flex-1 flex flex-col min-w-0">
-          <CalendarGrid
-            rooms={rooms}
-            scheduledRoutines={scheduledRoutines}
-            onDrop={handleDropRoutine}
-            onRoutineClick={handleScheduledRoutineClick}
-            onMoveRoutine={handleMoveRoutine}
-            visibleRooms={visibleRooms}
-          />
+            <CalendarGrid
+              rooms={rooms}
+              scheduledRoutines={scheduledRoutines}
+              onDrop={handleDropRoutine}
+              onRoutineClick={handleScheduledRoutineClick}
+              onMoveRoutine={handleMoveRoutine}
+              onDeleteRoutine={handleDeleteScheduledRoutine}
+              visibleRooms={visibleRooms}
+            />
         </div>
 
         {/* Right Sidebar - Tools */}
