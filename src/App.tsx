@@ -25,7 +25,8 @@ import { mockRooms, mockScheduledRoutines } from './data/mockSchedules';
 import { useConflictDetection } from './hooks/useConflictDetection';
 
 // Utils
-import { addMinutesToTime } from './utils/timeUtils';
+import { addMinutesToTime, formatTime } from './utils/timeUtils';
+import { findConflicts } from './utils/conflictUtils';
 
 function App() {
   // State
@@ -41,6 +42,26 @@ function App() {
   
   // Conflict detection
   const { conflicts, showConflictModal, checkConflicts, resolveConflicts, dismissConflicts } = useConflictDetection();
+
+  // Get conflicts for display in sidebar
+  const getConflictsForDisplay = () => {
+    const conflictList: Array<{dancer: string, routines: string[], time: string}> = [];
+    
+    scheduledRoutines.forEach(routine => {
+      const routineConflicts = findConflicts(scheduledRoutines, routine);
+      if (routineConflicts.length > 0) {
+        routineConflicts.forEach(conflict => {
+          conflictList.push({
+            dancer: conflict.dancerName,
+            routines: conflict.conflictingRoutines,
+            time: formatTime(conflict.timeSlot.hour, conflict.timeSlot.minute)
+          });
+        });
+      }
+    });
+    
+    return conflictList;
+  };
 
   // Handlers
   const handleRoutineClick = useCallback((routine: Routine) => {
@@ -207,6 +228,7 @@ function App() {
             onRoomConfigChange={handleRoomConfigChange}
             onEmailSchedule={handleEmailSchedule}
             onExportSchedule={handleExportSchedule}
+            conflicts={getConflictsForDisplay()}
           />
         </div>
 

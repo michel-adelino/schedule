@@ -188,27 +188,6 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
         </div>
       </div>
 
-      {/* Conflicts Display */}
-      {conflicts.length > 0 && (
-        <div className="bg-red-100 border-b-2 border-red-400 p-4 shadow-lg">
-          <div className="flex items-center gap-2 mb-3">
-            <AlertTriangle className="w-5 h-5 text-red-700" />
-            <span className="font-bold text-red-900 text-lg">⚠️ SCHEDULING CONFLICTS DETECTED</span>
-          </div>
-          <div className="space-y-2">
-            {conflicts.map((conflict, index) => (
-              <div key={index} className="bg-red-200 border border-red-400 rounded-lg p-3">
-                <div className="text-sm font-bold text-red-900">
-                  <strong>{conflict.dancer}</strong> is double-booked at {conflict.time}
-                </div>
-                <div className="text-sm text-red-800 mt-1">
-                  Conflicting routines: {conflict.routines.join(', ')}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Calendar Grid */}
       <div className="flex-1 overflow-auto bg-white border-2 border-blue-200" style={{ 
@@ -220,9 +199,9 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
       }}>
         <div className="min-w-max bg-gray-50" style={{ minWidth: 'max-content' }}>
           {/* Days Header */}
-          <div className="flex border-b border-gray-200 sticky top-0 bg-white z-20" style={{ minWidth: 'max-content' }}>
+          <div className="flex border-b border-gray-200 sticky top-0 bg-white z-20" style={{ minWidth: 'max-content', position: 'sticky', top: 0 }}>
             {/* Time column header */}
-            <div className="w-24 bg-gray-50 border-r border-gray-200 flex items-center justify-center">
+            <div className="w-24 bg-gray-50 border-r border-gray-200 flex items-center justify-center sticky left-0 z-30" style={{ position: 'sticky', left: 0 }}>
               <span className="text-xs font-medium text-gray-600">TIME</span>
             </div>
             
@@ -256,7 +235,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
           {/* Time slots and grid */}
           <div className="flex" style={{ minWidth: 'max-content' }}>
             {/* Time column */}
-            <div className="w-24 bg-gray-50 border-r border-gray-200 sticky left-0 z-10 flex-shrink-0">
+            <div className="w-24 bg-gray-50 border-r border-gray-200 sticky left-0 z-30 flex-shrink-0" style={{ position: 'sticky', left: 0 }}>
               {timeSlots.map(({ hour, minute }, index) => (
                 <div key={index} className="h-16 border-b border-gray-200 flex items-center justify-center bg-white">
                   <span className="text-sm text-gray-600 font-medium">

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Room } from '../../types/room';
 import { Dancer } from '../../types/dancer';
-import { Search, Settings, Mail, Download, Users, Sliders } from 'lucide-react';
+import { Search, Settings, Mail, Download, Users, Sliders, AlertTriangle } from 'lucide-react';
 
 interface ToolsSidebarProps {
   rooms: Room[];
@@ -10,6 +10,7 @@ interface ToolsSidebarProps {
   onRoomConfigChange: (visibleRooms: number) => void;
   onEmailSchedule: () => void;
   onExportSchedule: () => void;
+  conflicts?: Array<{dancer: string, routines: string[], time: string}>;
 }
 
 export const ToolsSidebar: React.FC<ToolsSidebarProps> = ({
@@ -18,7 +19,8 @@ export const ToolsSidebar: React.FC<ToolsSidebarProps> = ({
   visibleRooms,
   onRoomConfigChange,
   onEmailSchedule,
-  onExportSchedule
+  onExportSchedule,
+  conflicts = []
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDancer, setSelectedDancer] = useState<string>('');
@@ -187,6 +189,32 @@ export const ToolsSidebar: React.FC<ToolsSidebarProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Conflicts Display */}
+      {conflicts.length > 0 && (
+        <div className="p-4 border-t border-gray-200">
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle className="w-4 h-4 text-red-600" />
+            <span className="text-sm font-medium text-red-800">⚠️ Conflicts</span>
+          </div>
+          
+          <div className="space-y-2 max-h-40 overflow-y-auto">
+            {conflicts.map((conflict, index) => (
+              <div key={index} className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <div className="text-xs font-bold text-red-900 mb-1">
+                  {conflict.dancer}
+                </div>
+                <div className="text-xs text-red-700 mb-1">
+                  Double-booked at {conflict.time}
+                </div>
+                <div className="text-xs text-red-600">
+                  {conflict.routines.join(', ')}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
