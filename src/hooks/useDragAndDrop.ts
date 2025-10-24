@@ -1,10 +1,13 @@
 import { useDrag, useDrop } from 'react-dnd';
-import { Routine, ScheduledRoutine } from '../types/routine';
+import { Routine } from '../types/routine';
 
 export const useRoutineDrag = (routine: Routine) => {
   const [{ isDragging }, drag] = useDrag({
     type: 'routine',
-    item: { routine },
+    item: { 
+      type: 'routine',
+      routine 
+    },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),

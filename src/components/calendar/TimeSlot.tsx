@@ -1,6 +1,5 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
-import { formatTime } from '../../utils/timeUtils';
 
 interface TimeSlotProps {
   hour: number;
@@ -28,7 +27,12 @@ export const TimeSlot: React.FC<TimeSlotProps> = ({
   const [{ isOver, canDrop }, drop] = useDrop({
     accept: ['routine', 'scheduled-routine'],
     drop: (item: any, monitor) => {
-      if (monitor.didDrop()) return;
+      console.log('TimeSlot drop triggered:', { item, timeSlot: { hour, minute, day, roomId } });
+      
+      if (monitor.didDrop()) {
+        console.log('Drop already handled by parent');
+        return;
+      }
       
       const timeSlot = { hour, minute, day, roomId };
       
@@ -40,6 +44,12 @@ export const TimeSlot: React.FC<TimeSlotProps> = ({
         // Dropping a new routine from sidebar
         console.log('Dropping new routine:', item.routine.songTitle, 'to', timeSlot);
         onDrop(item.routine, timeSlot);
+      } else {
+        console.log('Drop conditions not met:', { 
+          hasMoveRoutine: !!onMoveRoutine, 
+          hasOnDrop: !!onDrop, 
+          itemType: item.type 
+        });
       }
     },
     collect: (monitor) => ({

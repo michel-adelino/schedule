@@ -117,13 +117,21 @@ function App() {
       duration: routine.duration
     };
 
+    console.log('New scheduled routine created:', newScheduledRoutine);
+
     // Check for conflicts
     const hasConflicts = checkConflicts(scheduledRoutines, newScheduledRoutine);
     
     console.log('Conflict check result:', hasConflicts);
+    console.log('Current scheduled routines:', scheduledRoutines.length);
     
     if (!hasConflicts) {
-      setScheduledRoutines(prev => [...prev, newScheduledRoutine]);
+      console.log('No conflicts, adding routine to schedule');
+      setScheduledRoutines(prev => {
+        const updated = [...prev, newScheduledRoutine];
+        console.log('Updated scheduled routines:', updated.length);
+        return updated;
+      });
       
       // Update routine's scheduled hours
       setRoutines(prev => prev.map(r => 
@@ -182,7 +190,7 @@ function App() {
     const diff = start.getDate() - day;
     start.setDate(diff);
     
-    const weekDates = [];
+    const weekDates: Date[] = [];
     for (let i = 0; i < 7; i++) {
       const day = new Date(start);
       day.setDate(start.getDate() + i);
